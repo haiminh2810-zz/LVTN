@@ -9,7 +9,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
-
 namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
@@ -19,21 +18,22 @@ namespace WindowsFormsApplication1
             public int X;
             public int Y;
         }
-        public verteX[] vertices = new verteX[100];
-        public bool isDrawingVerteX;
+        public verteX[] vertices = new verteX[maxN];
+        public bool isDrawingVertex;
         public bool isDrawingEdge;
+        public bool isDrawingArrowEdge;
         public int n,m;
         public int radius=25;
         private int alignNumber=4; // meanless number
         private int vertexFontSize = 15;
         private int edgeFontSize = 11;
         private int temp;
-        public int[,] c = new int[1000, 1000];
+        public int[,] c = new int[maxN, maxN];
         private const int maxC=10000;
         private const int maxN = 1000;
         private int edgeSelect =0;
         private Label label1 = new Label();
-                
+        
         public Form1()
         {
             InitializeComponent();
@@ -72,7 +72,11 @@ namespace WindowsFormsApplication1
                 {
                     if (c[i, j] < maxC && c[i, j] > 0)
                     {
+                        
                         g.DrawLine(myPen, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+                        g.DrawArc(myPen, vertices[i].X, vertices[i].Y, distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y), 33, 45, 180);
+                        
+                        
                         myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i].Y + vertices[j].Y) / 2);
                         g.DrawString(c[i, j].ToString(), myFont, myBlackBrush, myPoint);
                     }
@@ -108,6 +112,37 @@ namespace WindowsFormsApplication1
                         if (myString != "Cancel" && myString != "")
                         {
                             c[temp, i] = Int32.Parse(myString);
+                            c[i, temp] = Int32.Parse(myString);
+                            m += 2;
+                        }
+                        break;
+                    }
+                }
+            }
+            this.Refresh();
+        }
+        private void addArrowEdge(object sender, MouseEventArgs e)
+        {
+
+            for (int i = 0; i < n; i++)
+            {
+                float t = (vertices[i].X - e.X) * (vertices[i].X - e.X) + (vertices[i].Y - e.Y) * (vertices[i].Y - e.Y);
+
+                if (t < radius * radius)
+                {
+                    edgeSelect += 1;
+                    if (edgeSelect == 1)
+                    {
+                        temp = i;
+                        break;
+                    }
+                    else if (edgeSelect == 2)
+                    {
+                        edgeSelect = 0;
+                        String myString = ShowMyDialogBox();
+                        if (myString != "Cancel" && myString != "")
+                        {
+                            c[temp, i] = Int32.Parse(myString);
                             m += 1;
                         }
                         break;
@@ -119,12 +154,16 @@ namespace WindowsFormsApplication1
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
            
-            if (isDrawingVerteX) {
+            if (isDrawingVertex) {
                 addVerteX(sender, e);
             }
             if (isDrawingEdge)
             {
                 addEdge(sender, e);
+            }
+            if (isDrawingArrowEdge)
+            {
+                addArrowEdge(sender, e);
             }
         }
 
@@ -152,6 +191,8 @@ namespace WindowsFormsApplication1
             Graphics g=form3.panel1.CreateGraphics();
             form3.Size = new Size(this.Size.Width, this.Size.Height);
             form3.panel1.Size = new Size(this.panel1.Size.Width,this.panel1.Size.Height);
+            form3.panel2.Left = form3.panel1.Left + form3.panel1.Width;
+            form3.panel2.AutoScroll = true;
             form3.n = n;
             for (int i = 0; i < n; i++) { form3.vertices[i].X = vertices[i].X; form3.vertices[i].Y = vertices[i].Y; }
             form3.c = c;
@@ -159,17 +200,7 @@ namespace WindowsFormsApplication1
             form3.radius = radius;
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            isDrawingVerteX = true;
-            isDrawingEdge = false;
-        }
-        private void button2_Click(object sender, EventArgs e)
-        {
-            isDrawingVerteX = false;
-            isDrawingEdge = true;
-            edgeSelect = 0;
-        }
+        
         private void button3_Click(object sender, EventArgs e)
         {
             showSolution();
@@ -269,6 +300,47 @@ namespace WindowsFormsApplication1
         {
             this.panel1.Top += 50;
         }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            Form4 form4 = new Form4();
+            Graphics g = form4.panel1.CreateGraphics();
+            form4.Size = new Size(this.Size.Width, this.Size.Height);
+            form4.panel1.Size = new Size(this.panel1.Size.Width, this.panel1.Size.Height);
+            form4.panel2.Left = form4.panel1.Left + form4.panel1.Width;
+            form4.panel2.Height = form4.panel1.Height;
+            form4.n = n;
+            for (int i = 0; i < n; i++) { form4.vertices[i].X = vertices[i].X; form4.vertices[i].Y = vertices[i].Y; }
+            form4.c = c;
+            form4.Show();
+            form4.radius = radius;
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            isDrawingArrowEdge = true;
+            isDrawingEdge = false;
+            isDrawingVertex = false;
+            edgeSelect = 0;
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            isDrawingVertex = true;
+            isDrawingEdge = false;
+            isDrawingArrowEdge = false;
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            isDrawingVertex = false;
+            isDrawingEdge = true;
+            isDrawingArrowEdge = false;
+            edgeSelect = 0;
+        }
+        private int distance(int x1, int y1, int x2, int y2)
+        {
+            return (int)(Math.Floor(Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))));
+        }
+
     }
     
 }

@@ -19,21 +19,23 @@ namespace WindowsFormsApplication1
             public int Y;
         }
         public verteX[] vertices = new verteX[maxN];
+        public int movingVertex;
+        public bool isDragging;
+        public bool isMovingVertex;
         public bool isDrawingVertex;
         public bool isDrawingEdge;
         public bool isDrawingArrowEdge;
         public int n,m;
         public int radius=25;
-        private int alignNumber=4; // meanless number
         private int vertexFontSize = 15;
         private int edgeFontSize = 11;
         private int temp;
         public int[,] c = new int[maxN, maxN];
-        private const int maxC=10000;
+        private const int maxC=10000000;
         private const int maxN = 1000;
         private int edgeSelect =0;
         private Label label1 = new Label();
-        
+        private float oldTrackbarValue=10;
         public Form1()
         {
             InitializeComponent();
@@ -63,11 +65,8 @@ namespace WindowsFormsApplication1
             for (int i = 0; i < n; i++)
             {
                 g.FillEllipse(myBlackBrush, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
-                Debug.WriteLine((vertices[i].X - radius) + " " + (vertices[i].Y - radius) + " " + radius * 2 + " " + radius * 2);
-                g.DrawString(i.ToString(), myFont, myWhiteBrush, vertices[i].X - radius / 2 + alignNumber, vertices[i].Y - radius / 2);
             }
-            
-            
+          
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
                 {
@@ -76,20 +75,37 @@ namespace WindowsFormsApplication1
                         if (c[i, j] == c[j, i])
                         {
                             g.DrawLine(myPen, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+
+                            Point myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i].Y + vertices[j].Y) / 2);
+                            g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, myPoint);
                         }
                         else
                         {
-                            //Point point1 = new Point (vertices[i].X, vertices[i].Y);
-                            //Point point2 = new Point (vertices[j].X, vertices[j].Y);
-                            //Point point3 = new Point((vertices[i].X + vertices[j].X) / 2 - distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2, (vertices[i].Y + vertices[j].Y) / 2 - -distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2);
-                            //Point[] curvePoints = {point1,point3,point2};
-                            //g.DrawCurve(myArrowPen,curvePoints);
-                            
+                            if (c[j, i] != maxC&&j>i) // nếu tồn tại cạnh ngược chiều
+                            {
+                                Point point1 = new Point(vertices[i].X, vertices[i].Y);
+                                Point point2 = new Point(vertices[j].X, vertices[j].Y);
+                                Point point3 = new Point((vertices[i].X + vertices[j].X) / 2 - distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2, (vertices[i].Y + vertices[j].Y) / 2 - -distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2);
+                                Point[] curvePoints = { point1, point3, point2 };
+                                g.DrawCurve(myArrowPen, curvePoints);
+
+                                g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, point3);
+                            }
+                            else
+                            {
+                                g.DrawLine(myArrowPen, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+
+                                Point myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i].Y + vertices[j].Y) / 2);
+                                g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, myPoint);
+                            }
                         }
-                        Point myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i] .Y + vertices[j].Y) / 2);
-                        g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, myPoint);
+                        
                     }
                 }
+            for (int i = 0; i < n; i++)
+            {
+                g.DrawString(i.ToString(), myFont, myWhiteBrush, vertices[i].X - vertexFontSize / 2, vertices[i].Y - vertexFontSize / 2-4);
+            }
             
         }
         private void addVerteX(object sender, MouseEventArgs e)
@@ -161,6 +177,20 @@ namespace WindowsFormsApplication1
             }
             this.Refresh();
         }
+        private void moveVertex(object sender, MouseEventArgs e)
+        {
+            
+            for (int i = 0; i < n; i++)
+            {
+                float t = (vertices[i].X - e.X) * (vertices[i].X - e.X) + (vertices[i].Y - e.Y) * (vertices[i].Y - e.Y);
+
+                if (t < radius * radius)
+                {
+                    movingVertex = i;
+                    break;
+                }
+            }
+        }
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
            
@@ -174,6 +204,11 @@ namespace WindowsFormsApplication1
             if (isDrawingArrowEdge)
             {
                 addArrowEdge(sender, e);
+            }
+            if (isMovingVertex)
+            {
+                moveVertex(sender, e);
+                isDragging = true;
             }
         }
 
@@ -202,6 +237,7 @@ namespace WindowsFormsApplication1
             form3.Size = new Size(this.Size.Width, this.Size.Height);
             form3.panel1.Size = new Size(this.panel1.Size.Width,this.panel1.Size.Height);
             form3.panel2.Left = form3.panel1.Left + form3.panel1.Width;
+            form3.panel2.Height = form3.panel1.Height;
             form3.panel2.AutoScroll = true;
             form3.n = n;
             for (int i = 0; i < n; i++) { form3.vertices[i].X = vertices[i].X; form3.vertices[i].Y = vertices[i].Y; }
@@ -325,6 +361,7 @@ namespace WindowsFormsApplication1
             form4.panel1.Size = new Size(this.panel1.Size.Width, this.panel1.Size.Height);
             form4.panel2.Left = form4.panel1.Left + form4.panel1.Width;
             form4.panel2.Height = form4.panel1.Height;
+            //form4.panel2.AutoScroll = true;
             form4.n = n;
             for (int i = 0; i < n; i++) { form4.vertices[i].X = vertices[i].X; form4.vertices[i].Y = vertices[i].Y; }
             form4.c = c;
@@ -350,6 +387,7 @@ namespace WindowsFormsApplication1
             isDrawingArrowEdge = true;
             isDrawingEdge = false;
             isDrawingVertex = false;
+            isMovingVertex = false;
             edgeSelect = 0;
         }
         private void button1_Click(object sender, EventArgs e)
@@ -357,13 +395,23 @@ namespace WindowsFormsApplication1
             isDrawingVertex = true;
             isDrawingEdge = false;
             isDrawingArrowEdge = false;
+            isMovingVertex = false;
         }
         private void button2_Click(object sender, EventArgs e)
         {
             isDrawingVertex = false;
             isDrawingEdge = true;
             isDrawingArrowEdge = false;
+            isMovingVertex = false;
             edgeSelect = 0;
+        }
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            isMovingVertex = true;
+            isDrawingVertex = false;
+            isDrawingEdge = false;
+            isDrawingArrowEdge = false;
+            
         }
         private int distance(int x1, int y1, int x2, int y2)
         {
@@ -372,6 +420,34 @@ namespace WindowsFormsApplication1
         private Rectangle rect(int x1, int y1, int x2, int y2)
         {
             return new Rectangle(x1, y1, x2,y2);
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            
+            for (int i = 0; i < n; i++)
+            {
+                vertices[i].X = (int)(Math.Round(vertices[i].X *(oldTrackbarValue/10)/ ((float)trackBar1.Value/10)));
+                vertices[i].Y = (int)(Math.Round(vertices[i].Y *(oldTrackbarValue/10)/ ((float)trackBar1.Value/10)));
+            }
+            radius = (int)(Math.Round(radius * (oldTrackbarValue / 10) / ((float)trackBar1.Value / 10)));
+            oldTrackbarValue = trackBar1.Value;
+            this.Refresh();
+        }
+
+        private void panel1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDragging)
+            {
+                vertices[movingVertex].X = e.X;
+                vertices[movingVertex].Y = e.Y;
+                this.Refresh();
+            }
+        }
+
+        private void panel1_MouseUp(object sender, MouseEventArgs e)
+        {
+            isDragging = false;
         }
     }
     

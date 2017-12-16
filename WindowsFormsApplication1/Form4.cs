@@ -22,14 +22,13 @@ namespace WindowsFormsApplication1
         public bool[] free = new bool[maxN];
         public int[] trace = new int[maxN];
         int sum;
-        private const int maxC = 10000;
+        private const int maxC = 10000000;
         private const int maxN = 1000;
         private bool Connected;
         private int s;
         private int f;
         public int n;
         public int radius;
-        bool wait = false;
         int u = 0; int min = maxC;
         private struct Collection
         {
@@ -131,12 +130,15 @@ namespace WindowsFormsApplication1
                             //Point point3 = new Point((vertices[i].X + vertices[j].X) / 2 - distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2, (vertices[i].Y + vertices[j].Y) / 2 - -distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2);
                             //Point[] curvePoints = {point1,point3,point2};
                             //g.DrawCurve(myArrowPen,curvePoints);
-
                         }
                         Point myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i].Y + vertices[j].Y) / 2);
                         g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, myPoint);
                     }
                 }
+            for (int i = 0; i < n; i++)
+            {
+                g.DrawString(i.ToString(), myFont, myWhiteBrush, vertices[i].X - vertexFontSize / 2, vertices[i].Y - vertexFontSize / 2 - 4);
+            }
         }
         
         
@@ -150,56 +152,58 @@ namespace WindowsFormsApplication1
                         min = d[i];
                         u = i;
                     }
-                free[u] = true; 
-                sum += d[u]; 
-                push(u);
-                this.Refresh();
+                free[u] = true;
                 if (u == n)
                 {
                     Connected = false;
                     MessageBox.Show("Đồ thị không liên thông");
+                    button1.Visible = false;
                     return;
                 }
- 
-                if (S.n == n)
-                {
-                    MessageBox.Show("KT Thuật toán");
-                    return;
-                }
-                
+                sum += d[u]; 
+                push(u);
                 for (int v = 0; v < n; v++)
                     if (!free[v] && d[v] > c[u, v])
                     {
-                        d[v] = c[u,v];
+                        d[v] = c[u, v];
                         trace[v] = u;
-                        
                     }
                 
-                panel2.Controls.Clear();
-                for (int i = 0; i < n; i++)
+                updateLabel();
+                this.Refresh();
+                if (S.n == n)
                 {
-                    Label lbl = new Label();
-                    lbl.Text = "d[" + (i).ToString() + "] = " + d[i];
-                    lbl.Location = new Point(10, i * 30);
-                    panel2.Controls.Add(lbl);
+                    MessageBox.Show("KT Thuật toán với cây bao phủ = "+sum.ToString());
+                    button1.Visible = false;
+                    return;
                 }
-                string temp = "S={";
-                for (int i = 0; i < S.n; i++)
-                {
-                    temp += S.S[i].ToString() + ",";
-                }
-                if (S.n > 0) temp = temp.Substring(0, temp.Length - 1);
-                temp += "}";
-                Label lblS = new Label();
-                lblS.Text = temp;
-                lblS.Location = new Point(10, n * 30);
-                panel2.Controls.Add(lblS);
-                Label lblSum = new Label();
-                lblSum.Text = "Sum = "+sum.ToString();
-                lblSum.Location = new Point(10, (n+1) * 30);
-                panel2.Controls.Add(lblSum);
         }
-
+        private void updateLabel()
+        {
+            panel2.Controls.Clear();
+            for (int i = 0; i < n; i++)
+            {
+                Label lbl = new Label();
+                lbl.Text = "d[" + (i).ToString() + "] = " + d[i];
+                lbl.Location = new Point(10, i * 30);
+                panel2.Controls.Add(lbl);
+            }
+            string temp = "S={";
+            for (int i = 0; i < S.n; i++)
+            {
+                temp += S.S[i].ToString() + ",";
+            }
+            if (S.n > 0) temp = temp.Substring(0, temp.Length - 1);
+            temp += "}";
+            Label lblS = new Label();
+            lblS.Text = temp;
+            lblS.Location = new Point(10, n * 30);
+            panel2.Controls.Add(lblS);
+            Label lblSum = new Label();
+            lblSum.Text = "Sum = " + sum.ToString();
+            lblSum.Location = new Point(10, (n + 1) * 30);
+            panel2.Controls.Add(lblSum);
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             solve();

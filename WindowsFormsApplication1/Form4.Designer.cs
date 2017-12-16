@@ -53,9 +53,11 @@
             // 
             // panel2
             // 
+            this.panel2.AllowDrop = true;
+            this.panel2.AutoScroll = true;
             this.panel2.Location = new System.Drawing.Point(278, 12);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(200, 202);
+            this.panel2.Size = new System.Drawing.Size(139, 202);
             this.panel2.TabIndex = 2;
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             // 

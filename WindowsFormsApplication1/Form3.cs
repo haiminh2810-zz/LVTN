@@ -19,13 +19,13 @@ namespace WindowsFormsApplication1
             public int Y;
         }
         Timer timer = new Timer();
-        public verteX[] vertices = new verteX[100];
-        public int[,] c = new int[100, 100];
-        public int[] d = new int[100];
-        public bool[] free = new bool[100];
-        public int[] trace = new int[100];
-        private const int maxC = 10000;
-        private const int maxN = 100;
+        public verteX[] vertices = new verteX[maxN];
+        public int[,] c = new int[maxN, maxN];
+        public int[] d = new int[maxN];
+        public bool[] free = new bool[maxN];
+        public int[] trace = new int[maxN];
+        private const int maxC = 10000000;
+        private const int maxN = 1000;
         private int s;
         private int f;
         public int n;
@@ -45,41 +45,81 @@ namespace WindowsFormsApplication1
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-            
-            Pen myPen = new Pen(Color.Red, 2);
+
             Graphics g = e.Graphics;
-            SolidBrush myBrush = new SolidBrush(Color.Black);
-            SolidBrush myBrush2 = new SolidBrush(Color.Pink);
-            SolidBrush myBrush3 = new SolidBrush(Color.White);
-            Font myLineFont = new Font("Arial", 11);
-            myPen.CustomEndCap = new AdjustableArrowCap(6, 6);
+            Pen myArrowPen = new Pen(Color.Red, 2);
+            myArrowPen.CustomEndCap = new AdjustableArrowCap(6, 6);
+            Pen myArrowPen2 = new Pen(Color.SkyBlue, 2);
+            myArrowPen2.CustomEndCap = new AdjustableArrowCap(6, 6);
+            Pen myPen = new Pen(Color.Red, 2);
             Pen myPen2 = new Pen(Color.SkyBlue, 2);
-            myPen2.CustomEndCap = new AdjustableArrowCap(6, 6);
-            Font myFont = new Font("Arial", 15);
+            SolidBrush myBlackBrush = new SolidBrush(Color.Black);
+            SolidBrush myPinkBrush = new SolidBrush(Color.Pink);
+            SolidBrush myWhiteBrush = new SolidBrush(Color.White);
+            int vertexFontSize = 15;
+            int edgeFontSize = 11;
+            int alignNumber = 4;
+            Font myFont = new Font("Arial", vertexFontSize);
+            Font myFont2 = new Font("Arial", edgeFontSize);
+            g.DrawLine(new Pen(Color.Black, 2), new Point(0, 0), new Point(0, panel1.Height));
+            g.DrawLine(new Pen(Color.Black, 2), new Point(0, 0), new Point(panel1.Width, 0));
+            g.DrawLine(new Pen(Color.Black, 2), new Point(0, panel1.Height), new Point(panel1.Width, panel1.Height));
+            g.DrawLine(new Pen(Color.Black, 2), new Point(panel1.Width, 0), new Point(panel1.Width, panel1.Height));
             for (int i = 0; i < n; i++)
             {
                 if (!free[i])
-                    g.FillEllipse(myBrush, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
+                    g.FillEllipse(myBlackBrush, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
                 else
-                    g.FillEllipse(myBrush2, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
+                    g.FillEllipse(myPinkBrush, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
                 
-                g.DrawString((i).ToString(), myFont, myBrush3, vertices[i].X - radius / 2 + 4, vertices[i].Y - radius / 2);
-                g.DrawString("d = "+(d[i]).ToString(), myFont, myBrush, vertices[i].X - radius / 2 + 4, vertices[i].Y + radius );
             }
-            for (int i=0;i<n;i++)
-                for (int j=0;j<n;j++)
-                    if (c[i, j] != maxC && i != j)
+
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                {
+                    if (c[i, j] < maxC && c[i, j] > 0)
                     {
-                        if (free[i]==false||free[j]==false) 
-                            g.DrawLine(myPen, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+                        if (c[i, j] == c[j, i])
+                        {
+                            if (free[i] == false || free[j] == false)
+                                g.DrawLine(myPen, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+                            else
+                                g.DrawLine(myPen2, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+                        }
                         else
-                            g.DrawLine(myPen2, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
-                        Point myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i].Y + vertices[j].Y) / 2);
+                        {
+                            if (c[j, i] != maxC&&j>i) // nếu tồn tại cạnh ngược chiều
+                            {
+                                Point point1 = new Point(vertices[i].X, vertices[i].Y);
+                                Point point2 = new Point(vertices[j].X, vertices[j].Y);
+                                Point point3 = new Point((vertices[i].X + vertices[j].X) / 2 - distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2, (vertices[i].Y + vertices[j].Y) / 2 - -distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2);
+                                Point[] curvePoints = { point1, point3, point2 };
+                                if (free[i] == false || free[j] == false)
+                                    g.DrawCurve(myArrowPen, curvePoints);
+                                else
+                                    g.DrawCurve(myArrowPen2, curvePoints);
+                                
+
+                                g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, point3);
+                            }
+                            else
+                            {
+                                if (free[i] == false || free[j] == false)
+                                    g.DrawLine(myArrowPen, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+                                else
+                                    g.DrawLine(myArrowPen2, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+
+                                Point myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i].Y + vertices[j].Y) / 2);
+                                g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, myPoint);
+                            }
+                        }
                         
-                        g.DrawString(c[i,j].ToString(), myLineFont, myBrush, myPoint);
                     }
-            
-            
+                }
+            for (int i = 0; i < n; i++)
+            {
+                g.DrawString(i.ToString(), myFont, myWhiteBrush, vertices[i].X - vertexFontSize / 2, vertices[i].Y - vertexFontSize / 2 - 4);
+            }
         }
         private void initDijkstra()
         {
@@ -122,16 +162,14 @@ namespace WindowsFormsApplication1
                         min = d[i];
                         u = i;
                     }
-                free[u] = true;
+                free[u] = true; updateLabel(); push(u);
                 if (u == n || u == f)
-                {
-                    push(u);
+                {   
                     this.Refresh();
-                    
                     MessageBox.Show("Thuật toán kết thúc với quãng đường = "+d[f].ToString());
+                    button1.Visible = false;
                     return;
                 }
-                push(u);
                 for (int v = 0; v < n; v++)
                     if (!free[v] && d[v] > d[u] + c[u, v])
                     {
@@ -139,27 +177,31 @@ namespace WindowsFormsApplication1
                         trace[v] = u;
                     }
                 this.Refresh();
-                panel2.Controls.Clear();
-                for (int i = 0; i < n; i++)
-                {
-                    Label lbl = new Label();
-                    lbl.Text = "d[" + (i).ToString() + "] = " + d[i];
-                    lbl.Location = new Point(10, i * 30);
-                    panel2.Controls.Add(lbl);
-                }
-                string temp = "S={";
-                for (int i = 0; i < S.n; i++)
-                {
-                    temp += S.S[i].ToString() + ",";
-                }
-                if (S.n > 0) temp = temp.Substring(0, temp.Length - 1);
-                temp += "}";
-                Label lblS = new Label();
-                lblS.Text = temp;
-                lblS.Location = new Point(10, n * 30);
-                panel2.Controls.Add(lblS);
+                
         }
-
+        private void updateLabel()
+        {
+            panel2.Controls.Clear();
+            for (int i = 0; i < n; i++)
+            {
+                Label lbl = new Label();
+                lbl.Text = "d[" + (i).ToString() + "] = " + d[i];
+                lbl.Location = new Point(10, i * 30);
+                panel2.Controls.Add(lbl);
+            }
+            string temp = "S={";
+            for (int i = 0; i < S.n; i++)
+            {
+                temp += S.S[i].ToString() + ",";
+            }
+            if (S.n > 0) temp = temp.Substring(0, temp.Length - 1);
+            temp += "}";
+            Label lblS = new Label();
+            lblS.Text = temp;
+            lblS.Location = new Point(10, n * 30);
+            panel2.Controls.Add(lblS);
+            
+        }
         private void panel2_Paint(object sender, PaintEventArgs e)
         {
             //SolidBrush myBrush = new SolidBrush(Color.Black);
@@ -186,7 +228,9 @@ namespace WindowsFormsApplication1
             S.S[S.n] = value;
             S.n++;
         }
-
-        
+        private int distance(int x1, int y1, int x2, int y2)
+        {
+            return (int)(Math.Floor(Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))));
+        }
         }
 }

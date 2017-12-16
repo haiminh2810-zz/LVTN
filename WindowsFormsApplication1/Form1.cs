@@ -49,11 +49,13 @@ namespace WindowsFormsApplication1
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
+            Pen myArrowPen = new Pen(Color.Red, 2);
+            myArrowPen.CustomEndCap = new AdjustableArrowCap(6, 6);
             Pen myPen = new Pen(Color.Red, 2);
             SolidBrush myBlackBrush = new SolidBrush(Color.Black);
             SolidBrush myWhiteBrush = new SolidBrush(Color.White);
             Font myFont = new Font("Arial", vertexFontSize);
-
+            Font myFont2 = new Font("Arial", edgeFontSize);
             g.DrawLine(new Pen(Color.Black,2),new Point (0,0),new Point (0,panel1.Height));
             g.DrawLine(new Pen(Color.Black, 2), new Point(0, 0), new Point(panel1.Width,0 ));
             g.DrawLine(new Pen(Color.Black, 2), new Point(0, panel1.Height), new Point(panel1.Width, panel1.Height));
@@ -64,23 +66,31 @@ namespace WindowsFormsApplication1
                 Debug.WriteLine((vertices[i].X - radius) + " " + (vertices[i].Y - radius) + " " + radius * 2 + " " + radius * 2);
                 g.DrawString(i.ToString(), myFont, myWhiteBrush, vertices[i].X - radius / 2 + alignNumber, vertices[i].Y - radius / 2);
             }
-            myPen.CustomEndCap = new AdjustableArrowCap(6, 6);
-            myFont = new Font("Arial", edgeFontSize);
-            Point myPoint;
+            
+            
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
                 {
                     if (c[i, j] < maxC && c[i, j] > 0)
                     {
-                        
-                        g.DrawLine(myPen, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
-                        g.DrawArc(myPen, vertices[i].X, vertices[i].Y, distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y), 33, 45, 180);
-                        
-                        
-                        myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i].Y + vertices[j].Y) / 2);
-                        g.DrawString(c[i, j].ToString(), myFont, myBlackBrush, myPoint);
+                        if (c[i, j] == c[j, i])
+                        {
+                            g.DrawLine(myPen, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+                        }
+                        else
+                        {
+                            //Point point1 = new Point (vertices[i].X, vertices[i].Y);
+                            //Point point2 = new Point (vertices[j].X, vertices[j].Y);
+                            //Point point3 = new Point((vertices[i].X + vertices[j].X) / 2 - distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2, (vertices[i].Y + vertices[j].Y) / 2 - -distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2);
+                            //Point[] curvePoints = {point1,point3,point2};
+                            //g.DrawCurve(myArrowPen,curvePoints);
+                            
+                        }
+                        Point myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i] .Y + vertices[j].Y) / 2);
+                        g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, myPoint);
                     }
                 }
+            
         }
         private void addVerteX(object sender, MouseEventArgs e)
         {
@@ -246,6 +256,11 @@ namespace WindowsFormsApplication1
                     n = Int32.Parse(sr.ReadLine());
                     m = Int32.Parse(sr.ReadLine());
                     String[] substrings;
+                    vertices = new verteX[maxN];
+                    for (int u = 0; u < maxN; u++)
+                        for (int v = 0; v < maxN; v++)
+                            if (u == v) c[u, v] = 0;
+                            else c[u, v] = maxC;
                     for (int i = 0; i < n; i++)
                     {
                         substrings = sr.ReadLine().Split(' ');
@@ -303,6 +318,7 @@ namespace WindowsFormsApplication1
 
         private void button11_Click(object sender, EventArgs e)
         {
+            bool isDirectGraph = false;
             Form4 form4 = new Form4();
             Graphics g = form4.panel1.CreateGraphics();
             form4.Size = new Size(this.Size.Width, this.Size.Height);
@@ -312,8 +328,21 @@ namespace WindowsFormsApplication1
             form4.n = n;
             for (int i = 0; i < n; i++) { form4.vertices[i].X = vertices[i].X; form4.vertices[i].Y = vertices[i].Y; }
             form4.c = c;
-            form4.Show();
             form4.radius = radius;
+            for (int i=0;i<n;i++)
+                for (int j = 0; j < n; j++)
+                {
+                    if (c[i, j] != c[j, i])
+                    {
+                        MessageBox.Show("Không thể áp dụng thuật toán Prim cho đồ thị có hướng");
+                        isDirectGraph = true;
+                        return;
+                    }
+                }
+            if (!isDirectGraph)
+            {
+                form4.Show();
+            }
         }
 
         private void button1_Click_1(object sender, EventArgs e)
@@ -340,7 +369,10 @@ namespace WindowsFormsApplication1
         {
             return (int)(Math.Floor(Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))));
         }
-
+        private Rectangle rect(int x1, int y1, int x2, int y2)
+        {
+            return new Rectangle(x1, y1, x2,y2);
+        }
     }
     
 }

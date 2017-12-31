@@ -30,6 +30,7 @@ namespace WindowsFormsApplication1
         public int n;
         public int radius;
         int u = 0; int min = maxC;
+        private bool end = false;
         private struct Collection
         {
             public int n;
@@ -39,6 +40,13 @@ namespace WindowsFormsApplication1
         public Form4()
         {
             InitializeComponent();
+        }
+        private void Form4_Load(object sender, EventArgs e)
+        {
+            button1.Location = new Point(panel1.Location.X, panel1.Location.Y + panel1.Height);
+            button2.Location = new Point(button2.Location.X, panel1.Location.Y + panel1.Height);
+            initPrim();
+            
         }
         private void initPrim()
         {
@@ -78,11 +86,7 @@ namespace WindowsFormsApplication1
             lblSum.Location = new Point(10, (n + 1) * 30);
             panel2.Controls.Add(lblSum);
         }
-        private void Form4_Load(object sender, EventArgs e)
-        {
-            button1.Location = new Point(panel1.Location.X, panel1.Location.Y + panel1.Height);
-            initPrim();
-        }
+        
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
@@ -158,6 +162,8 @@ namespace WindowsFormsApplication1
                     Connected = false;
                     MessageBox.Show("Đồ thị không liên thông");
                     button1.Visible = false;
+                    button2.Visible = false;
+                    end = true;
                     return;
                 }
                 sum += d[u]; 
@@ -175,6 +181,8 @@ namespace WindowsFormsApplication1
                 {
                     MessageBox.Show("KT Thuật toán với cây bao phủ = "+sum.ToString());
                     button1.Visible = false;
+                    button2.Visible = false;
+                    end = true;
                     return;
                 }
         }
@@ -192,16 +200,18 @@ namespace WindowsFormsApplication1
             for (int i = 0; i < S.n; i++)
             {
                 temp += S.S[i].ToString() + ",";
+                if (i % 5 == 0&&i>4) temp += "\n";
             }
             if (S.n > 0) temp = temp.Substring(0, temp.Length - 1);
             temp += "}";
             Label lblS = new Label();
             lblS.Text = temp;
+            lblS.Size = new Size(panel2.Width-10, 8*(n/5+1));
             lblS.Location = new Point(10, n * 30);
             panel2.Controls.Add(lblS);
             Label lblSum = new Label();
             lblSum.Text = "Sum = " + sum.ToString();
-            lblSum.Location = new Point(10, (n + 1) * 30);
+            lblSum.Location = new Point(10, lblS.Bottom+10);
             panel2.Controls.Add(lblSum);
         }
         private void button1_Click(object sender, EventArgs e)
@@ -216,6 +226,14 @@ namespace WindowsFormsApplication1
         {
             S.S[S.n] = value;
             S.n++;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            while (!end)
+            {
+                solve();
+            }
         }     
     }
 }

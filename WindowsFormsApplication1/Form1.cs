@@ -258,7 +258,8 @@ namespace WindowsFormsApplication1
             SaveFileDialog savefile = new SaveFileDialog();  
             savefile.FileName = "unknown.txt";
             savefile.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
-
+            int n = 1000;
+            int m = 3000;
             if (savefile.ShowDialog() == DialogResult.OK)
             {
                 using (StreamWriter sw = new StreamWriter(savefile.FileName))

@@ -30,6 +30,7 @@ namespace WindowsFormsApplication1
         private int f;
         public int n;
         public int radius;
+        private bool end = false;
         private struct Collection
         {
             public int n;
@@ -85,6 +86,8 @@ namespace WindowsFormsApplication1
                                 g.DrawLine(myPen, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
                             else
                                 g.DrawLine(myPen2, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+                            Point myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i].Y + vertices[j].Y) / 2);
+                            g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, myPoint);
                         }
                         else
                         {
@@ -144,6 +147,7 @@ namespace WindowsFormsApplication1
         private void Form3_Load(object sender, EventArgs e)
         {         
             button1.Location = new Point(panel1.Location.X,panel1.Location.Y+panel1.Height);
+            button2.Location = new Point(button2.Location.X, panel1.Location.Y + panel1.Height);
             initDijkstra();
             
         }
@@ -167,7 +171,9 @@ namespace WindowsFormsApplication1
                 {   
                     this.Refresh();
                     MessageBox.Show("Thuật toán kết thúc với quãng đường = "+d[f].ToString());
+                    end = true;
                     button1.Visible = false;
+                    button2.Visible = false;
                     return;
                 }
                 for (int v = 0; v < n; v++)
@@ -193,11 +199,14 @@ namespace WindowsFormsApplication1
             for (int i = 0; i < S.n; i++)
             {
                 temp += S.S[i].ToString() + ",";
+                if (i % 5 == 0 && i > 4) 
+                    temp += "\n";
             }
             if (S.n > 0) temp = temp.Substring(0, temp.Length - 1);
             temp += "}";
             Label lblS = new Label();
             lblS.Text = temp;
+            lblS.Size = new Size(panel2.Width - 10, 10 * (n / 5 + 1));
             lblS.Location = new Point(10, n * 30);
             panel2.Controls.Add(lblS);
             
@@ -231,6 +240,16 @@ namespace WindowsFormsApplication1
         private int distance(int x1, int y1, int x2, int y2)
         {
             return (int)(Math.Floor(Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))));
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+       
+                while (!end)
+                {
+                    solve();
+                }
+            
         }
         }
 }

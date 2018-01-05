@@ -191,11 +191,15 @@ namespace WindowsFormsApplication1
             panel2.Controls.Clear();
             for (int i = 0; i < n; i++)
             {
+
                 Label lbl = new Label();
                 lbl.Text = "d[" + (i).ToString() + "] = " + d[i];
                 lbl.Location = new Point(10, i * 30);
+                if (!((S.n > 90) && (i !=n-1)))
+                    
                 panel2.Controls.Add(lbl);
             }
+            
             string temp = "S={";
             for (int i = 0; i < S.n; i++)
             {
@@ -206,7 +210,7 @@ namespace WindowsFormsApplication1
             temp += "}";
             Label lblS = new Label();
             lblS.Text = temp;
-            lblS.Size = new Size(panel2.Width-10, 8*(n/5+1));
+            lblS.Size = new Size(panel2.Width-10, 16*(n/5+1));
             lblS.Location = new Point(10, n * 30);
             panel2.Controls.Add(lblS);
             Label lblSum = new Label();

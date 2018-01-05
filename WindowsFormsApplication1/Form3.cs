@@ -49,30 +49,43 @@ namespace WindowsFormsApplication1
 
             Graphics g = e.Graphics;
             Pen myArrowPen = new Pen(Color.Red, 2);
-            myArrowPen.CustomEndCap = new AdjustableArrowCap(6, 6);
+            myArrowPen.CustomEndCap = new AdjustableArrowCap(4, 4);
             Pen myArrowPen2 = new Pen(Color.SkyBlue, 2);
-            myArrowPen2.CustomEndCap = new AdjustableArrowCap(6, 6);
+            myArrowPen2.CustomEndCap = new AdjustableArrowCap(4, 4);
             Pen myPen = new Pen(Color.Red, 2);
             Pen myPen2 = new Pen(Color.SkyBlue, 2);
+            Pen myBluePen = new Pen(Color.Blue, 2);
             SolidBrush myBlackBrush = new SolidBrush(Color.Black);
+            SolidBrush myGreenBrush = new SolidBrush(Color.DarkGreen);
             SolidBrush myPinkBrush = new SolidBrush(Color.Pink);
             SolidBrush myWhiteBrush = new SolidBrush(Color.White);
+            SolidBrush myOrangeBrush = new SolidBrush(Color.DarkOrange);
+            SolidBrush myYellowBrush = new SolidBrush(Color.Yellow);
+            SolidBrush myRedBrush = new SolidBrush(Color.DarkRed);
+            SolidBrush myBlueBrush = new SolidBrush(Color.Blue);
             int vertexFontSize = 15;
             int edgeFontSize = 11;
-            int alignNumber = 4;
             Font myFont = new Font("Arial", vertexFontSize);
             Font myFont2 = new Font("Arial", edgeFontSize);
+            // Draw border
             g.DrawLine(new Pen(Color.Black, 2), new Point(0, 0), new Point(0, panel1.Height));
             g.DrawLine(new Pen(Color.Black, 2), new Point(0, 0), new Point(panel1.Width, 0));
             g.DrawLine(new Pen(Color.Black, 2), new Point(0, panel1.Height), new Point(panel1.Width, panel1.Height));
             g.DrawLine(new Pen(Color.Black, 2), new Point(panel1.Width, 0), new Point(panel1.Width, panel1.Height));
+            // Draw Vertices
             for (int i = 0; i < n; i++)
             {
-                if (!free[i])
-                    g.FillEllipse(myBlackBrush, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
+                if (S.n==0)
+                    g.FillEllipse(myGreenBrush, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
+                else if (u==i)
+                    g.FillEllipse(myRedBrush, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
+                else if (c[u,i]!=maxC&&!free[i])
+                    g.FillEllipse(myYellowBrush, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
+                else if (!free[i])
+                    g.FillEllipse(myGreenBrush, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
                 else
                     g.FillEllipse(myPinkBrush, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
-                
+                g.DrawEllipse(myBluePen, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));
             }
 
             for (int i = 0; i < n; i++)
@@ -132,6 +145,7 @@ namespace WindowsFormsApplication1
             {
                 free[u] = false;
                 d[u] = maxC;
+                trace[u] = -1;
             }
             s = 0; f = n - 1;
             d[s] = 0;
@@ -143,6 +157,8 @@ namespace WindowsFormsApplication1
                 lbl.Location = new Point(10, i * 30);
                 panel2.Controls.Add(lbl);
             }
+            updateLabelD();
+            updateLabelGuide();
         }
         private void Form3_Load(object sender, EventArgs e)
         {         
@@ -160,32 +176,38 @@ namespace WindowsFormsApplication1
         private void solve()
         {
             u = n; min = maxC;
-                for (int i = 0; i < n; i++)
-                    if (!free[i] && d[i] < min)
-                    {
-                        min = d[i];
-                        u = i;
-                    }
-                free[u] = true; updateLabel(); push(u);
-                if (u == n || u == f)
-                {   
-                    this.Refresh();
-                    MessageBox.Show("Thuật toán kết thúc với quãng đường = "+d[f].ToString());
-                    end = true;
-                    button1.Visible = false;
-                    button2.Visible = false;
-                    return;
+            for (int i = 0; i < n; i++)
+                if (!free[i] && d[i] < min)
+                {
+                    min = d[i];
+                    u = i;
                 }
-                for (int v = 0; v < n; v++)
-                    if (!free[v] && d[v] > d[u] + c[u, v])
-                    {
-                        d[v] = d[u] + c[u, v];
-                        trace[v] = u;
-                    }
+            free[u] = true;
+            for (int v = 0; v < n; v++)
+                if (!free[v] && d[v] > d[u] + c[u, v])
+                {
+                    d[v] = d[u] + c[u, v];
+                    trace[v] = u;
+                }
+            push(u);
+            updateLabelD();
+            updateLabelGuide();
+            if (u == n || u == f)
+            {   
                 this.Refresh();
-                
+                if (d[f] != maxC)
+                {
+
+                }
+                MessageBox.Show("Thuật toán kết thúc với quãng đường = "+d[f].ToString());
+                end = true;
+                button1.Visible = false;
+                button2.Visible = false;
+                return;
+            } 
+            this.Refresh();
         }
-        private void updateLabel()
+        private void updateLabelD()
         {
             panel2.Controls.Clear();
             for (int i = 0; i < n; i++)
@@ -193,7 +215,13 @@ namespace WindowsFormsApplication1
                 Label lbl = new Label();
                 lbl.Text = "d[" + (i).ToString() + "] = " + d[i];
                 lbl.Location = new Point(10, i * 30);
+                if (trace[i] == u)
+                {
+                    lbl.Font = new Font("Arial", 10);
+                    lbl.ForeColor = Color.Orange;
+                }
                 panel2.Controls.Add(lbl);
+                
             }
             string temp = "S={";
             for (int i = 0; i < S.n; i++)
@@ -209,29 +237,30 @@ namespace WindowsFormsApplication1
             lblS.Size = new Size(panel2.Width - 10, 10 * (n / 5 + 1));
             lblS.Location = new Point(10, n * 30);
             panel2.Controls.Add(lblS);
-            
         }
-        private void panel2_Paint(object sender, PaintEventArgs e)
+        private void updateLabelGuide()
         {
-            //SolidBrush myBrush = new SolidBrush(Color.Black);
-            //Font myFont = new Font("Arial", 15);
-            //Graphics g = e.Graphics;
-            //for (int i = 0; i < n; i++)
-            //{
-            //    g.DrawString("d["+(i).ToString()+"] = "+d[i], myFont, myBrush, 30,30*(i+1));
-            //}
-            //string temp = "S={";
-            //for (int i = 0; i < S.n; i++)
-            //{
-            //    temp += S.S[i].ToString() + ",";
-            //}
-            //if (S.n > 0) temp = temp.Substring(0, temp.Length - 1);
-            //temp += "}";
-            
-            //g.DrawString(temp, myFont, myBrush, 30, 30 * (n + 1));
-            
-            
+            Label lbl = new Label();
+            panel3.Controls.Clear();
+            if (S.n==0){
+                    lbl.Text = "Đỉnh bắt đầu có khoảng cách đến chính nó bằng 0. Các đỉnh còn lại có khoảng cách là +∞";
+            }
+            else if (S.n==f)
+                    lbl.Text="Process next node.The node with minimal distance has been extracted from the priority queue. It will be processed next and is marked in red.\n";
+            else {
+               
+                    lbl.Text = "- Chọn ra đỉnh có nhãn nhỏ nhất là đỉnh " + u.ToString()+". Đỉnh này được tô màu đỏ.\n";
+                    lbl.Text += "- Tất cả các đỉnh chưa được thăm kề với đỉnh " + u.ToString() + " được tối ưu lại nhãn\n";
+                    for (int i=0;i<n;i++)
+                        if (trace[i]==u) 
+                        {
+                            lbl.Text += "- Đỉnh " + i.ToString() + " được cập nhập lại nhãn =" + d[i].ToString() + " \n";
+                        }
+            }
+            lbl.Size = new Size(140,(lbl.Text.Length / 10 +1)* 10);
+            panel3.Controls.Add(lbl);
         }
+        
         private void push(int value)
         {
             S.S[S.n] = value;

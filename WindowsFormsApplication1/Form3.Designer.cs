@@ -33,6 +33,9 @@ namespace WindowsFormsApplication1
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -59,9 +62,8 @@ namespace WindowsFormsApplication1
             this.panel2.AutoScroll = true;
             this.panel2.Location = new System.Drawing.Point(278, 12);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(152, 238);
+            this.panel2.Size = new System.Drawing.Size(150, 238);
             this.panel2.TabIndex = 2;
-            this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             // 
             // button2
             // 
@@ -73,12 +75,32 @@ namespace WindowsFormsApplication1
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // panel3
+            // 
+            this.panel3.AutoScroll = true;
+            this.panel3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.panel3.Controls.Add(this.label1);
+            this.panel3.Location = new System.Drawing.Point(434, 12);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(150, 238);
+            this.panel3.TabIndex = 4;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 4);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(86, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "label1asdasdasd";
+            // 
             // Form3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(568, 296);
+            this.ClientSize = new System.Drawing.Size(595, 296);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.button1);
@@ -87,6 +109,8 @@ namespace WindowsFormsApplication1
             this.Text = "Form3";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form3_Load);
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -98,6 +122,8 @@ namespace WindowsFormsApplication1
         public System.Windows.Forms.Panel panel1;
         public System.Windows.Forms.Panel panel2;
         private Button button2;
+        public Panel panel3;
+        private Label label1;
 
        
 

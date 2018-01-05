@@ -235,9 +235,11 @@ namespace WindowsFormsApplication1
             Form3 form3 = new Form3();
             Graphics g=form3.panel1.CreateGraphics();
             form3.Size = new Size(this.Size.Width, this.Size.Height);
-            form3.panel1.Size = new Size(this.panel1.Size.Width,this.panel1.Size.Height);
+            form3.panel1.Size = new Size(this.panel1.Size.Width-200,this.panel1.Size.Height);
             form3.panel2.Left = form3.panel1.Left + form3.panel1.Width;
             form3.panel2.Height = form3.panel1.Height;
+            form3.panel3.Left = form3.panel2.Right + 10;
+            form3.panel3.Height = form3.panel1.Height;
             form3.panel2.AutoScroll = true;
             form3.n = n;
             for (int i = 0; i < n; i++) { form3.vertices[i].X = vertices[i].X; form3.vertices[i].Y = vertices[i].Y; }
@@ -258,8 +260,7 @@ namespace WindowsFormsApplication1
             SaveFileDialog savefile = new SaveFileDialog();  
             savefile.FileName = "unknown.txt";
             savefile.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
-            int n = 1000;
-            int m = 3000;
+            
             if (savefile.ShowDialog() == DialogResult.OK)
             {
                 using (StreamWriter sw = new StreamWriter(savefile.FileName))
@@ -314,6 +315,7 @@ namespace WindowsFormsApplication1
                         c[vertex1, vertex2] = length;
                     } 
                     this.Refresh();
+                    button2_Click_1(sender, e);// Switch to move vertex mode
                     //MessageBox.Show("Graph have been loaded");
                     
                 }

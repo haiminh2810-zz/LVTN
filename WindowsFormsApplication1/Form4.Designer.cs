@@ -32,6 +32,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.button3 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // panel1
@@ -54,7 +56,6 @@
             // 
             // panel2
             // 
-            
             this.panel2.AutoScroll = true;
             this.panel2.Location = new System.Drawing.Point(278, 12);
             this.panel2.Name = "panel2";
@@ -72,11 +73,30 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // panel3
+            // 
+            this.panel3.Location = new System.Drawing.Point(436, 12);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(200, 238);
+            this.panel3.TabIndex = 4;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(173, 260);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(96, 23);
+            this.button3.TabIndex = 6;
+            this.button3.Text = "Print this step";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // Form4
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(486, 295);
+            this.ClientSize = new System.Drawing.Size(642, 295);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.button1);
@@ -95,5 +115,7 @@
         public System.Windows.Forms.Panel panel1;
         public System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button button2;
+        public System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Button button3;
     }
 }

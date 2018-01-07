@@ -48,7 +48,7 @@ namespace WindowsFormsApplication1
                     if (u == v) c[u, v] = 0;
                     else c[u, v] = maxC;
         }
-        private void panel1_Paint(object sender, PaintEventArgs e)
+        /*private void panel1_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
             Pen myArrowPen = new Pen(Color.Red, 2);
@@ -107,6 +107,80 @@ namespace WindowsFormsApplication1
                 g.DrawString(i.ToString(), myFont, myWhiteBrush, vertices[i].X - vertexFontSize / 2, vertices[i].Y - vertexFontSize / 2-4);
             }
             
+        }
+         */
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            Pen myArrowPen = new Pen(Color.Black, 2);
+            myArrowPen.CustomEndCap = new AdjustableArrowCap(6, 6);
+            Pen myArrowPen2 = new Pen(Color.SkyBlue, 2);
+            myArrowPen2.CustomEndCap = new AdjustableArrowCap(6, 6);
+            Pen myRedPen = new Pen(Color.Red, 2);
+            Pen myBlackPen = new Pen(Color.Red, 2);
+            Pen myPen2 = new Pen(Color.SkyBlue, 2);
+            Pen myBluePen = new Pen(Color.Blue, 2);
+            SolidBrush myBlackBrush = new SolidBrush(Color.Black);
+            SolidBrush myGreenBrush = new SolidBrush(Color.DarkGreen);
+            SolidBrush myPinkBrush = new SolidBrush(Color.Pink);
+            SolidBrush myWhiteBrush = new SolidBrush(Color.White);
+            SolidBrush myOrangeBrush = new SolidBrush(Color.DarkOrange);
+            SolidBrush myYellowBrush = new SolidBrush(Color.Yellow);
+            SolidBrush myRedBrush = new SolidBrush(Color.DarkRed);
+            SolidBrush myBlueBrush = new SolidBrush(Color.Blue);
+            int vertexFontSize = 15;
+            int edgeFontSize = 11;
+            Font myFont = new Font("Arial", vertexFontSize);
+            Font myFont2 = new Font("Arial", edgeFontSize);
+            // Draw border
+            g.DrawLine(new Pen(Color.Black, 2), new Point(0, 0), new Point(0, panel1.Height));
+            g.DrawLine(new Pen(Color.Black, 2), new Point(0, 0), new Point(panel1.Width, 0));
+            g.DrawLine(new Pen(Color.Black, 2), new Point(0, panel1.Height), new Point(panel1.Width, panel1.Height));
+            g.DrawLine(new Pen(Color.Black, 2), new Point(panel1.Width, 0), new Point(panel1.Width, panel1.Height));
+            // Draw Vertices
+            for (int i = 0; i < n; i++)
+            {
+                g.FillEllipse(myGreenBrush, new Rectangle(vertices[i].X - radius, vertices[i].Y - radius, radius * 2, radius * 2));   
+            }
+
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                {
+                    if (c[i, j] < maxC && c[i, j] > 0)
+                    {
+                        if (c[i, j] == c[j, i]) // undirected graph
+                        {
+                            g.DrawLine(myBlackPen, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+                            Point myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i].Y + vertices[j].Y) / 2);
+                            g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, myPoint);
+                        }
+                        else // directed graph
+                        {
+                            if (c[j, i] != maxC && j > i) // Draw curve
+                            {
+                                Point point1 = new Point(vertices[i].X, vertices[i].Y);
+                                Point point2 = new Point(vertices[j].X, vertices[j].Y);
+                                Point point3 = new Point((vertices[i].X + vertices[j].X) / 2 - minimum(distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2, 50), (vertices[i].Y + vertices[j].Y) / 2 + minimum(distance(vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y) / 2, 50));
+                                Point[] curvePoints = { point1, point3, point2 };
+                                g.DrawCurve(myArrowPen, curvePoints);
+                                g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, point3);
+                            }
+                            else // Draw Line
+                            {
+                                g.DrawLine(myArrowPen, vertices[i].X, vertices[i].Y, vertices[j].X, vertices[j].Y);
+                                Point myPoint = new Point((vertices[i].X + vertices[j].X) / 2, (vertices[i].Y + vertices[j].Y) / 2);
+                                g.DrawString(c[i, j].ToString(), myFont2, myBlackBrush, myPoint);
+                            }
+                        }
+
+                    }
+                }
+            for (int i = 0; i < n; i++)
+            {
+                
+                g.DrawString(i.ToString(), myFont, myWhiteBrush, vertices[i].X - vertexFontSize / 2, vertices[i].Y - vertexFontSize / 2 - 4);
+            }
+
         }
         private void addVerteX(object sender, MouseEventArgs e)
         {
@@ -235,7 +309,7 @@ namespace WindowsFormsApplication1
             Form3 form3 = new Form3();
             Graphics g=form3.panel1.CreateGraphics();
             form3.Size = new Size(this.Size.Width, this.Size.Height);
-            form3.panel1.Size = new Size(this.panel1.Size.Width-200,this.panel1.Size.Height);
+            form3.panel1.Size = new Size(this.panel1.Size.Width,this.panel1.Size.Height);
             form3.panel2.Left = form3.panel1.Left + form3.panel1.Width;
             form3.panel2.Height = form3.panel1.Height;
             form3.panel3.Left = form3.panel2.Right + 10;
@@ -364,7 +438,8 @@ namespace WindowsFormsApplication1
             form4.panel1.Size = new Size(this.panel1.Size.Width, this.panel1.Size.Height);
             form4.panel2.Left = form4.panel1.Left + form4.panel1.Width;
             form4.panel2.Height = form4.panel1.Height;
-            //form4.panel2.AutoScroll = true;
+            form4.panel3.Left = form4.panel2.Right + 10;
+            form4.panel3.Height = form4.panel1.Height;
             form4.n = n;
             for (int i = 0; i < n; i++) { form4.vertices[i].X = vertices[i].X; form4.vertices[i].Y = vertices[i].Y; }
             form4.c = c;
@@ -451,6 +526,20 @@ namespace WindowsFormsApplication1
         private void panel1_MouseUp(object sender, MouseEventArgs e)
         {
             isDragging = false;
+        }
+        private int minimum(int a, int b)
+        {
+            if (a < b)
+                return a;
+            else
+                return b;
+        }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            n = 0; m = 0;
+            this.Refresh();
+            c = new int[maxN, maxN];
         }
     }
     

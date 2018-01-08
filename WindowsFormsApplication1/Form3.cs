@@ -250,7 +250,7 @@ namespace WindowsFormsApplication1
                 Label lbl = new Label();
                 lbl.Text = "Chặng đường ngắn nhất từ " + s.ToString() + " tới " + f.ToString() + " là " + tmp + ".\nTổng độ dài = " + d[f].ToString() ;
                 lbl.Location = new Point(lblS.Location.X, lblS.Location.Y + lblS.Height);
-                lbl.Size = new Size(lblS.Width, lblS.Height*2);
+                lbl.Size = new Size(lblS.Width, lblS.Height*6);
                 lbl.Font = new Font("Arial", 10);
                 
                 panel2.Controls.Add(lbl);

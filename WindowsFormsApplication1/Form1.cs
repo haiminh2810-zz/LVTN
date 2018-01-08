@@ -117,7 +117,7 @@ namespace WindowsFormsApplication1
             Pen myArrowPen2 = new Pen(Color.SkyBlue, 2);
             myArrowPen2.CustomEndCap = new AdjustableArrowCap(6, 6);
             Pen myRedPen = new Pen(Color.Red, 2);
-            Pen myBlackPen = new Pen(Color.Red, 2);
+            Pen myBlackPen = new Pen(Color.Black, 2);
             Pen myPen2 = new Pen(Color.SkyBlue, 2);
             Pen myBluePen = new Pen(Color.Blue, 2);
             SolidBrush myBlackBrush = new SolidBrush(Color.Black);

@@ -46,6 +46,7 @@ namespace WindowsFormsApplication1
         {
             button1.Location = new Point(panel1.Location.X, panel1.Location.Y + panel1.Height);
             button2.Location = new Point(button2.Location.X, panel1.Location.Y + panel1.Height);
+            button3.Location = new Point(button3.Location.X, panel1.Location.Y + panel1.Height);
             initPrim();
             
         }
@@ -325,7 +326,7 @@ namespace WindowsFormsApplication1
             temp += "}";
             Label lblS = new Label();
             lblS.Text = temp;
-            lblS.Size = new Size(panel2.Width - 10, 10 * (n / 5 + 1));
+            lblS.Size = new Size(panel2.Width - 10, 20 * (n / 5 + 1));
             lblS.Location = new Point(10, n * 30);
             panel2.Controls.Add(lblS);
             
@@ -336,11 +337,15 @@ namespace WindowsFormsApplication1
             panel3.Controls.Clear();
             if (S.n == 0)
             {
-                lbl.Text = "Đỉnh bắt đầu có khoảng cách đến chính nó bằng 0. Các đỉnh còn lại có khoảng cách là +∞";
+                lbl.Text = "Chọn đỉnh gốc là đỉnh 0. Đỉnh gốc có nhãn bằng 0, các đỉnh còn lại có nhãn là +∞";
             }
             else
             {
-                lbl.Text = "- Chọn ra đỉnh có nhãn nhỏ nhất là đỉnh " + u.ToString() + ". Đỉnh này được tô màu đỏ.\n";
+                lbl.Text = "- Chọn ra đỉnh có nhãn nhỏ nhất là đỉnh " + u.ToString() + ". Đỉnh này được tô màu đỏ.";
+                if (S.n >= 2)
+                    lbl.Text += "- Đồng thời cạnh (" + trace[u].ToString() + "," + u.ToString() + ") được thêm vào cây bao phủ nhỏ nhất.\n";
+                else
+                    lbl.Text +="\n";
                 lbl.Text += "- Tất cả các đỉnh chưa được thăm kề với đỉnh " + u.ToString() + " (nếu có, tô màu vàng) được tối ưu lại nhãn\n";
                     for (int i = 0; i < n; i++)
                         if (trace[i] == u)
